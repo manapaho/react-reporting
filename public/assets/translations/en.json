@@ -1,0 +1,11 @@
+{
+  "App.Navbar.Brand": "React-Webpack",
+  "App.Navbar.Language.German": "German",
+  "App.Navbar.Language.English": "English",
+  "home.greeting": "Welcome {firstName} {lastName}!",
+  "users.label.firstName": "First Name",
+  "users.label.lastName": "Last Name",
+  "users.label.email": "Email",
+  "users.title": "Change your account details {firstName} {lastName}",
+  "users.button.save": "Save"
+}
