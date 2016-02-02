@@ -1,0 +1,16 @@
+interface Node {
+  id: ID!
+}
+
+type Query {
+  node(id: ID!): Node
+  viewer: User
+}
+
+type User implements Node {
+  id: ID!
+  firstName: String
+  lastName: String
+  email: String
+  language: String
+}

@@ -44,14 +44,11 @@ import db from './database/db';
  * Import GraphQL Types.
  */
 import {nodeInterface, nodeField} from './graphql/ql';
-import qlPerson from './graphql/qlUser';
-import qlPost from './graphql/qlPost';
+import qlUser from './graphql/qlUser';
 
 /**
  * Import GraphQL Mutations.
  */
-import updatePersonMutation from './graphql/mtUpdatePerson';
-import deletePostMutation from './graphql/mtDeletePost';
 
 /**
  * This is the type that will be the root of our query,
@@ -62,26 +59,11 @@ var queryType = new GraphQLObjectType({
   fields: () => ({
     node: nodeField,
     viewer: {
-      type: qlPerson,
+      type: qlUser,
       resolve: (_, args, {rootValue: {session}}) => {
-        return db.person.findOne({where: {id: 2}});
+        return db.user.findOne({where: {id: 2}});
       }
     }
-/*
-    ,
-    people: {
-      type: new GraphQLList(qlPerson),
-      resolve: (_, args, {rootValue: {session}}) => {
-        return db.person.findAll({where: args});
-      }
-    },
-    posts: {
-      type: new GraphQLList(qlPost),
-      resolve: (_, args, {rootValue: {session}}) => {
-        return db.post.findAll({where: args});
-      }
-    }
-*/
   })
 });
 
@@ -92,8 +74,6 @@ var queryType = new GraphQLObjectType({
 var mutationType = new GraphQLObjectType({
   name: 'Mutation',
   fields: {
-    updatePerson: updatePersonMutation,
-    deletePost: deletePostMutation
   }
 });
 
@@ -102,6 +82,6 @@ var mutationType = new GraphQLObjectType({
  * type we defined above) and export it.
  */
 export var Schema = new GraphQLSchema({
-  query: queryType,
-  mutation: mutationType
+  query: queryType
+  //mutation: mutationType
 });

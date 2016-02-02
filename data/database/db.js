@@ -22,7 +22,7 @@ import Sequelize from 'sequelize';
  * Create the database connection.
  */
 var sequelize = new Sequelize('reporting', 'root', 'abcDEF123', {
-  host: '192.168.101.44',
+  host: '192.168.101.242',
   dialect: 'mysql',
   pool: {
     max: 5,

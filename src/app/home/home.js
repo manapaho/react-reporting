@@ -75,7 +75,7 @@ class Home extends React.Component {
   render() {
     // Calculate stuff.
     return (
-      <div></div>
+      <div>{this.props.viewer.firstName}</div>
     );
   }
 }

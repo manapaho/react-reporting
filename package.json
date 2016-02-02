@@ -1,6 +1,6 @@
 {
   "name": "react-webpack",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "React Relay SQL Webpack SPA Babel6 Example.",
   "main": "index.js",
   "scripts": {
@@ -38,6 +38,7 @@
   },
   "devDependencies": {
     "autoprefixer": "^6.0.0",
+    "babel-cli": "^6.4.5",
     "babel-core": "^6.0.0",
     "babel-eslint": "^5.0.0-beta4",
     "babel-loader": "^6.0.0",
@@ -79,7 +80,7 @@
     "less-loader": "^2.0.0",
     "node-libs-browser": "^1.0.0",
     "null-loader": "^0.1.0",
-    "phantomjs": "^2.0.0",
+    "phantomjs-prebuilt": "^2.0.0",
     "postcss-loader": "^0.8.0",
     "q": "^1.0.0",
     "raw-loader": "^0.5.0",

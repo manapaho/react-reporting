@@ -161,7 +161,7 @@ module.exports = function makeWebpackConfig(options) {
       // Reference: https://github.com/webpack/raw-loader
       // Allow loading html through js
       test: /\.html$/,
-      loader: 'raw'
+      loader: 'html'
     }, {
       // JSON LOADER
       // Reference: https://github.com/webpack/json-loader
@@ -246,10 +246,10 @@ module.exports = function makeWebpackConfig(options) {
     // Render index.html
     config.plugins.push(
       new HtmlWebpackPlugin({
-        title: 'webpack',
-        template: './src/index.html'
+        template: './src/index.ejs',
+        inject: false
       })
-    )
+    );
   }
 
   // Add build specific plugins
