@@ -30,7 +30,7 @@ import routes from './routes';
 /**
  * Import Styles. TODO: Add support for white-labels
  */
-import styles from './index.less';
+import styles from './styles';
 
 /**
  * Add internationalization for supported languages.

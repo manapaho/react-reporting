@@ -12,6 +12,8 @@ import {IndexRoute, Route} from 'react-router';
 import App from './app/app';
 import Home from './app/home/home';
 import Users from './app/users/users';
+import Charts from './app/charts/charts';
+import Chart from './app/charts/chart/chart';
 
 /**
  * The application's GraphQL root query.
@@ -36,6 +38,16 @@ export default (
       path="/users"
       component={Users}
       queries={appQueries}
-      />
+    />
+    <Route
+      path="/charts"
+      component={Charts}
+      queries={appQueries}
+    />
+    <Route
+      path="/charts/:id"
+      component={Chart}
+      queries={appQueries}
+    />
   </Route>
 );

@@ -13,6 +13,7 @@
 
 // Modules
 var fs = require('fs');
+var path = require('path');
 
 var webpack = require('webpack');
 var autoprefixer = require('autoprefixer');
@@ -95,7 +96,8 @@ module.exports = function makeWebpackConfig(options) {
 
       // Output path from the view of the page
       // Uses webpack-dev-server in development
-      publicPath: BUILD ? '' : '', // http://localhost:8080/',
+      // Reference: http://stackoverflow.com/questions/34133808/webpack-ots-parsing-error-loading-fonts/34133809#34133809
+      publicPath: BUILD ? '' : 'http://localhost:3000/',
 
       // Filename for entry points
       // Only adds hash in build mode
@@ -120,6 +122,14 @@ module.exports = function makeWebpackConfig(options) {
     config.devtool = 'eval';
   }
 
+  config.resolve = {
+    extensions: ['', '.jsx', '.scss', '.js', '.json'],
+      modulesDirectories: [
+      'node_modules',
+      path.resolve(__dirname, './node_modules')
+    ]
+  };
+
   /**
    * Loaders
    * Reference: http://webpack.github.io/docs/configuration.html#module-loaders
@@ -127,7 +137,7 @@ module.exports = function makeWebpackConfig(options) {
    * This handles most of the magic responsible for converting modules
    */
 
-    // Initialize module
+  // Initialize module
   config.module = {
     preLoaders: [],
     loaders: [{
@@ -205,15 +215,36 @@ module.exports = function makeWebpackConfig(options) {
       )
   };
 
+  // SASS LOADER
+  // Reference: https://github.com/jtangelder/sass-loader
+  // Allow loading sass/css through js
+  // Reference: https://github.com/react-toolbox/react-toolbox/issues/246
+  // Configure React-Toolbox properly.
+  var sassLoader = {
+    test: /(\.scss|\.css)$/,
+    // Reference: https://github.com/webpack/style-loader
+    // Use style-loader in development for hot-loading
+    // Reference: https://github.com/webpack/css-loader
+    // Use css-loader with css-modules support for react-toolbox
+    // Reference: https://github.com/postcss/postcss-loader
+    // Reference: https://github.com/jtangelder/sass-loader
+    loader: (!BUILD || TEST) ? 'style!css?sourceMap&modules&importLoaders=2!postcss!resolve-url!sass?sourceMap!toolbox' :
+    // Reference: https://github.com/webpack/extract-text-webpack-plugin
+    // Extract sass/css files in production builds
+      ExtractTextPlugin.extract('css?sourceMap&modules&importLoaders=2!postcss!resolve-url!sass?sourceMap!toolbox')
+  };
+
   // Skip loading css in test mode
   if (TEST || TRANSLATE) {
     // Reference: https://github.com/webpack/null-loader
     // Return an empty module
-    lessLoader.loader = 'null'
+//    lessLoader.loader = 'null';
+    sassLoader.loader = 'null';
   }
 
   // Add cssLoader to the loader list
-  config.module.loaders.push(lessLoader);
+//  config.module.loaders.push(lessLoader);
+  config.module.loaders.push(sassLoader);
 
   /**
    * PostCSS
@@ -330,6 +361,10 @@ module.exports = function makeWebpackConfig(options) {
      * cert: fs.readFileSync('certificates/my-domain.crt'),
      * key: fs.readFileSync('certificates/my-domain.decrypted.key')
      */
+  };
+
+  config.toolbox = {
+    theme: path.join(__dirname, 'src/toolbox-theme.scss')
   };
 
   return config;

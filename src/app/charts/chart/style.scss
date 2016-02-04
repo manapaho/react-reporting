@@ -1,0 +1,15 @@
+@import "../../config";
+
+.data {
+  padding: 8px;
+}
+
+.top {
+  z-index: 99999;
+}
+
+.root {
+  padding-top: 8px;
+  display: flex;
+  flex-direction: row;
+}

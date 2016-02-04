@@ -1,0 +1,13 @@
+@import "../config";
+@import "~react-toolbox/lib/app_bar/config";
+@import "~react-toolbox/lib/button/config";
+
+.new-chart-button {
+  position: fixed;
+  top: $appbar-height - ($button-floating-height / 2);
+  right: $button-floating-height / 2;
+  z-index: $z-index-higher;
+}
+
+.root {
+}

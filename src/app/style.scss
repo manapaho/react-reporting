@@ -1,0 +1,61 @@
+@import "config";
+@import "~react-toolbox/lib/app_bar/config";
+@import "~react-toolbox/lib/button/config";
+
+hr {
+  margin: 4rem 0;
+  border-top: 1px solid $color-divider;
+}
+
+.appbar {
+  padding-right: 8 * $unit;
+}
+
+.features {
+  position: fixed;
+  top: $appbar-height;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: $z-index-normal;
+  transition: padding $animation-duration $animation-curve-default;
+  background-color: $palette-indigo-50;
+}
+
+.navigation {
+  position: fixed;
+  top: $appbar-height;
+  bottom: 0;
+  left: 0;
+  z-index: $z-index-high;
+  box-shadow: $features-left-shadow;
+  transition: transform $animation-duration $animation-curve-default;
+  background-color: $color-white;
+}
+
+.root {
+  &:not(.with-playground) {
+    > .playground {
+      transform: translateX(100%);
+    }
+    > .features {
+      padding-right: 8px;
+      padding-left: $navigation-width;
+    }
+    > .navigation {
+      transform: translateX(0);
+    }
+  }
+  &.with-playground {
+    > .playground {
+      transform: translateY(0);
+    }
+    > .features {
+      padding-right: $playground-width;
+      padding-left: 0;
+    }
+    > .navigation {
+      transform: translateX(- 100%);
+    }
+  }
+}
