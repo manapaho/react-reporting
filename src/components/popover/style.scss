@@ -1,15 +1,22 @@
-@import "../../app/config";
-
-.data {
-  padding: 8px;
-}
-
-.top {
-  z-index: 99999;
-}
+@import "~react-toolbox/lib/base";
+@import "./config";
 
 .root {
-  padding-top: 8px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: $z-index-highest;
   display: flex;
-  flex-direction: row;
+  width: 100vw;
+  height: 100vh;
+  flex-direction: column;
+  align-content: center;
+  align-items: center;
+  justify-content: center;
+  pointer-events: all;
+}
+
+.hidden {
+  display: none;
+  pointer-events: none;
 }

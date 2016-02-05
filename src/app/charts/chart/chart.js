@@ -51,7 +51,8 @@ class Chart extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      options: [{name: 'Bernd'}, {name: 'Wessels'}]
+      options: [{id: 0, name: 'Bernd'}, {id: 1, name: 'Besen'}, {id: 2, name: 'Wessels'}],
+      selectedOptions: [{id: 1, name: 'Besen'}]
     }
   }
 
@@ -68,6 +69,21 @@ class Chart extends React.Component {
 
   }
 
+  handleDataDimensionsFilterChanged = (value) => {
+    // TODO change graphql variable to get options from db.
+    this.setState({options: this.state.options});
+  };
+
+  handleDataDimensionsSelectionChanged = (selectedOptions) => {
+    this.setState({selectedOptions: selectedOptions})
+  };
+
+  optionTemplate = (option, index) => {
+    return (
+      <div key={option.id}>{option.name} - {index}</div>
+    );
+  };
+
   // Render the component.
   render() {
     // Get the properties.
@@ -78,9 +94,21 @@ class Chart extends React.Component {
     return (
       <div className={className}>
         <Card className={style.data}>
-          <Select label="labello" options={this.state.options}>
-            <h1>Bernd</h1>
-          </Select>
+          <div>
+            {this.state.selectedOptions.map((option, index) => {
+              return (
+                <span key={option.id}>{option.name}</span>
+              );
+            })}
+          </div>
+          <Select label="labello"
+                  options={this.state.options}
+                  selectedOptions={this.state.selectedOptions}
+                  optionKey="id"
+                  optionValue="name"
+                  optionTemplate={this.optionTemplate}
+                  onFilterChange={this.handleDataDimensionsFilterChanged}
+                  onSelectionChange={this.handleDataDimensionsSelectionChanged} />
         </Card>
       </div>
     );

@@ -22,6 +22,7 @@ import Relay from 'react-relay';
  * Import UX components.
  */
 import Button from 'react-toolbox/lib/button';
+import Input from 'react-toolbox/lib/input';
 
 /**
  * Import Internationalization.
@@ -70,12 +71,17 @@ class Home extends React.Component {
     });
   }
 
+  handleChange = (name, value) => {
+    this.setState({...this.state, [name]: value});
+  };
+
   // Render the component.
   render() {
     // Calculate stuff.
     return (
       <div>
         <Button icon='bookmark' label={this.props.viewer.firstName} raised accent/>
+        <Input type='text' label='Name' name='name' value={this.state.name} onChange={this.handleChange.bind(this, 'name')} maxLength={16 } />
         <h1>Bernd</h1>
         <h1>Bernd</h1>
         <h1>Bernd</h1>
