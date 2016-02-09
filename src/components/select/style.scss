@@ -1,7 +1,17 @@
-@import "../../app/config";
+@import "~react-toolbox/lib/base";
+@import "./config";
 
 .root {
 }
 
 .popover {
+}
+
+.option {
+  &:hover {
+    background-color: $select-option-hover-background;
+  }
+  &.focus {
+    background-color: $select-option-focus-background;
+  }
 }

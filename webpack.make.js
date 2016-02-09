@@ -61,7 +61,9 @@ module.exports = function makeWebpackConfig(options) {
   config.externals = {
     "react": "React",
     "react-dom": "ReactDOM",
-    "react-relay": "Relay"
+    "react-relay": "Relay",
+    "d3": "c3",
+    "c3": "c3"
   };
 
   /**

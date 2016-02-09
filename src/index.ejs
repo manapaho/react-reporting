@@ -15,6 +15,7 @@
   <link rel="apple-touch-icon" sizes="120x120" href="icon-120x120.png"/>
   <link rel="apple-touch-icon" sizes="76x76" href="icon-76x76.png"/>
   <link rel="apple-touch-icon" href="icon-60x60.png"/>
+  <link rel="stylesheet" href="externals/c3.css"/>
   <% if (htmlWebpackPlugin.files.favicon) { %>
   <link rel="shortcut icon" href="<%=htmlWebpackPlugin.files.favicon %>">
   <% } %>
@@ -30,6 +31,8 @@
 <script src="externals/react-with-addons.0.14.7.js"></script>
 <script src="externals/react-dom.0.14.7.js"></script>
 <script src="externals/relay.0.6.1.js"></script>
+<script src="externals/d3.js"></script>
+<script src="externals/c3.js"></script>
 <!-- Application Scripts -->
 <% for (var chunk in htmlWebpackPlugin.files.chunks) { %>
 <script src="<%=htmlWebpackPlugin.files.chunks[chunk].entry %>"></script>

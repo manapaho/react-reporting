@@ -10,6 +10,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Relay from 'react-relay';
+import C3 from '../../../components/c3/c3';
 
 /**
  * Import Mutations.
@@ -22,8 +23,10 @@ import Relay from 'react-relay';
 /**
  * Import UX components.
  */
+import Button from 'react-toolbox/lib/button';
 import Card from 'react-toolbox/lib/card';
 import Select from '../../../components/select/select';
+import FontIcon from 'react-toolbox/lib/font_icon';
 
 /**
  * Import styles.
@@ -51,8 +54,14 @@ class Chart extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      options: [{id: 0, name: 'Bernd'}, {id: 1, name: 'Besen'}, {id: 2, name: 'Wessels'}],
-      selectedOptions: [{id: 1, name: 'Besen'}]
+      dimensionsAndMeasures: [
+        {id: 0, type: 'measure', name: 'Spent'},
+        {id: 1, type: 'dimension', name: 'Sport'},
+        {id: 2, type: 'measure', name: 'Volume'},
+        {id: 3, type: 'dimension', name: 'Trade Area'},
+        {id: 4, type: 'measure', name: 'Tax'}],
+      selectedColumns: [],
+      selectedRows: []
     }
   }
 
@@ -69,23 +78,65 @@ class Chart extends React.Component {
 
   }
 
-  handleDataDimensionsFilterChanged = (value) => {
-    // TODO change graphql variable to get options from db.
-    this.setState({options: this.state.options});
+  handleColumnsSelectionChanged = (selectedOptions) => {
+    this.setState({selectedColumns: selectedOptions})
   };
 
-  handleDataDimensionsSelectionChanged = (selectedOptions) => {
-    this.setState({selectedOptions: selectedOptions})
+  handleRowsSelectionChanged = (selectedOptions) => {
+    this.setState({selectedRows: selectedOptions})
   };
 
-  optionTemplate = (option, index) => {
+  dimensionsAndMeasuresOptionTemplate = (option, index) => {
     return (
-      <div key={option.id}>{option.name} - {index}</div>
+      <div key={option.id}>
+        {(() => {
+          if (option.type == 'measure') {
+            return <FontIcon value='timeline'/>;
+          }
+          else {
+            return <FontIcon value='linear_scale'/>;
+          }
+        })()}
+        <span style={{verticalAlign: 'super'}}>{option.name}</span>
+      </div>
     );
   };
 
   // Render the component.
   render() {
+    let chartConfig = {
+      data: {
+        columns: [
+          ['data1', 30, 200, 100, 400, 150, 250],
+          ['data2', 50, 20, 10, 40, 15, 25]
+        ],
+        axes: {
+          data2: 'y2'
+        },
+        types: {
+          data2: 'bar' // ADD
+        }
+      },
+      axis: {
+        y: {
+          label: {
+            text: 'Y Label',
+            position: 'outer-middle'
+          }
+        },
+        y2: {
+          show: true,
+          label: {
+            text: 'Y2 Label',
+            position: 'outer-middle'
+          }
+        }
+      },
+      subchart: {
+        show: true
+      }
+    };
+
     // Get the properties.
     const {viewer, children} = this.props;
     //
@@ -94,21 +145,44 @@ class Chart extends React.Component {
     return (
       <div className={className}>
         <Card className={style.data}>
-          <div>
-            {this.state.selectedOptions.map((option, index) => {
-              return (
-                <span key={option.id}>{option.name}</span>
-              );
-            })}
+          <div className={style.dataRow}>
+            <Select className={style.selectColumns}
+                    label="Columns"
+                    options={this.state.dimensionsAndMeasures}
+                    selectedOptions={this.state.selectedColumns}
+                    optionKey="id"
+                    optionValue="name"
+                    optionTemplate={this.dimensionsAndMeasuresOptionTemplate}
+                    onSelectionChange={this.handleColumnsSelectionChanged}/>
+            <span className={style.selectedColumns}>
+              {this.state.selectedColumns.map((option, index) => {
+                return (
+                  <Button key={option.id} icon='close' label={option.name}/>
+                );
+              })}
+            </span>
           </div>
-          <Select label="labello"
-                  options={this.state.options}
-                  selectedOptions={this.state.selectedOptions}
-                  optionKey="id"
-                  optionValue="name"
-                  optionTemplate={this.optionTemplate}
-                  onFilterChange={this.handleDataDimensionsFilterChanged}
-                  onSelectionChange={this.handleDataDimensionsSelectionChanged} />
+          <div className={style.dataRow}>
+            <Select className={style.selectRows}
+                    label="Rows"
+                    options={this.state.dimensionsAndMeasures}
+                    selectedOptions={this.state.selectedRows}
+                    optionKey="id"
+                    optionValue="name"
+                    optionTemplate={this.dimensionsAndMeasuresOptionTemplate}
+                    onSelectionChange={this.handleRowsSelectionChanged}/>
+            <span className={style.selectedRows}>
+              {this.state.selectedRows.map((option, index) => {
+                return (
+                  <Button key={option.id} icon='close' label={option.name}/>
+                );
+              })}
+            </span>
+          </div>
+        </Card>
+        <br/>
+        <Card className={style.graph}>
+          <C3 config={chartConfig} element='testchart' type='pie'/>
         </Card>
       </div>
     );
