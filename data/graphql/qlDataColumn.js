@@ -53,9 +53,6 @@ import {
 /**
  * Import GraphQL Types.
  */
-import qlDataSource from './qlDataSource';
-import qlDataColumn from './qlDataColumn';
-import qlChart from './qlChart';
 
 /**
  * Import Database Access.
@@ -70,39 +67,25 @@ import db from '../database/db';
  * Create the GraphQL Type.
  */
 // Type name and global id.
-const typeName = 'User';
+const typeName = 'DataColumn';
 
 // Type creation.
-var qlUser = new GraphQLObjectType({
+var qlDataColumn = new GraphQLObjectType({
   name: typeName,
-  description: 'A person who uses our app',
+  description: 'A column of a data source',
   fields: () => ({
     id: globalIdField(typeName),
-    firstName: {
+    key: {
       type: GraphQLString
     },
-    lastName: {
+    name: {
       type: GraphQLString
     },
-    email: {
+    type: {
       type: GraphQLString
     },
-    language: {
+    aggregation: {
       type: GraphQLString
-    },
-    dataSources: {
-      type: new GraphQLList(qlDataSource),
-      resolve(dbUser){
-        return dbUser.getDataSources();
-        // db.DataSource.findAll({where: {DataSourceId: dbDataSource.id}});
-      }
-    },
-    charts: {
-      type: new GraphQLList(qlChart),
-      resolve(dbUser){
-        return dbUser.getCharts();
-        // db.DataSource.findAll({where: {DataSourceId: dbDataSource.id}});
-      }
     }
   }),
   interfaces: [nodeInterface]
@@ -111,10 +94,10 @@ var qlUser = new GraphQLObjectType({
 // Type registration.
 registerType({
   name: typeName,
-  getByID: (id)=>db.User.findOne({where: {id: id}}),
-  dbType: db.User.Instance,
-  qlType: qlUser
+  getByID: (id)=>db.DataColumn.findOne({where: {id: id}}),
+  dbType: db.DataColumn.Instance,
+  qlType: qlDataColumn
 });
 
 // Type export.
-export default qlUser;
+export default qlDataColumn;

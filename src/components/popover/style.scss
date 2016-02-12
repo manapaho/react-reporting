@@ -20,3 +20,11 @@
   display: none;
   pointer-events: none;
 }
+
+.popover {
+  position: fixed;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background-color: white;
+  box-shadow: $zdepth-shadow-1;
+}

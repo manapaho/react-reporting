@@ -61,7 +61,7 @@ var queryType = new GraphQLObjectType({
     viewer: {
       type: qlUser,
       resolve: (_, args, {rootValue: {session}}) => {
-        return db.user.findOne({where: {id: 2}});
+        return db.User.findOne({where: {id: 2}});
       }
     }
   })

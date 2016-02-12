@@ -12,26 +12,19 @@
  */
 export default function (sequelize, DataTypes) {
   // Define the model.
-  var model = sequelize.define('User', {
+  var model = sequelize.define('DataColumn', {
       // Declare the properties.
-      firstName: {
+      key: {
         type: DataTypes.STRING,
         allowNull: false
       },
-      lastName: {
+      name: {
         type: DataTypes.STRING,
         allowNull: false
       },
-      email: {
+      aggregation: {
         type: DataTypes.STRING,
-        allowNull: false,
-        validate: {
-          isEmail: true
-        }
-      },
-      language: {
-        type: DataTypes.STRING,
-        allowNull: false
+        allowNull: true
       }
     },
     // Declare the associations.
@@ -39,8 +32,8 @@ export default function (sequelize, DataTypes) {
       freezeTableName: true,
       classMethods: {
         associate: function (models) {
-          model.belongsToMany(models.DataSource, {through: models.User_DataSource});
-          model.belongsToMany(models.Chart, {through: models.User_Chart});
+          model.belongsTo(models.DataSource);
+          model.belongsToMany(models.ChartColumn, {through: models.ChartColumn_DataColumn});
         }
       }
     }

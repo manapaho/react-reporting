@@ -1,3 +1,40 @@
+type Chart implements Node {
+  id: ID!
+  name: String
+  description: String
+  chartColumns: [ChartColumn]
+}
+
+type ChartColumn implements Node {
+  id: ID!
+  name: String
+  type: String
+  dataColumns: [DataColumn]
+}
+
+type DataColumn implements Node {
+  id: ID!
+  key: String
+  name: String
+  type: String
+  aggregation: String
+}
+
+input DataColumnInput {
+  key: String
+  name: String
+  type: String
+  aggregation: String
+}
+
+type DataSource implements Node {
+  id: ID!
+  name: String
+  description: String
+  dataColumns: [DataColumn]
+  data(dataColumns: [DataColumnInput]): String
+}
+
 interface Node {
   id: ID!
 }
@@ -13,4 +50,6 @@ type User implements Node {
   lastName: String
   email: String
   language: String
+  dataSources: [DataSource]
+  charts: [Chart]
 }

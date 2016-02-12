@@ -1,45 +1,36 @@
 @import "../../config";
 
-.data {
-  display: flex;
-  flex-direction: column;
-  padding: 8px;
-}
-
-.dataRow {
-  display: flex;
-  flex-direction: row;
-}
-
-.selectedColumns {
-  flex: 1;
-}
-
-.selectColumns {
-  width: 300px;
-}
-
-.selectedRows {
-  flex: 1;
-}
-
-.selectRows {
-  width: 300px;
-}
-
-.top {
-  z-index: 99999;
-}
-
-.graph {
-  flex: 1;
-}
-
 .root {
   display: flex;
   height: 100%;
+  width: 100%;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.dataCard {
+  width: 300px;
+  margin: 5px;
+  padding: 8px;
+  display: flex;
   flex-direction: column;
-  justify-content: center;
-  padding-top: 8px;
-  padding-bottom: 8px;
+}
+
+.chartCard {
+  flex: 1;
+  margin: 5px;
+  padding: 8px;
+  display: flex;
+}
+
+.selectedColumns {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.selectedColumn {
+  flex: 1;
+  margin-right: 5px;
 }

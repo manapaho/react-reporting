@@ -116,13 +116,13 @@ class App extends React.Component {
             <Link label='Home' icon='home'/>
           </IndexLinkContainer>
           <IndexLinkContainer to={`/users`}>
-            <Link label='Data Sources' icon='description'/>
+            <Link label='Data' icon='description'/>
           </IndexLinkContainer>
           <IndexLinkContainer to={`/charts`}>
             <Link label='Charts' icon='insert_chart'/>
           </IndexLinkContainer>
           <IndexLinkContainer to={`/users`}>
-            <Link label='Layouts' icon='format_shapes'/>
+            <Link label='Reports' icon='format_shapes'/>
           </IndexLinkContainer>
         </Navigation>
         <div className={style.features}>

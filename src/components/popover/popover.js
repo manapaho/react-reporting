@@ -87,6 +87,8 @@ export default class Select extends React.Component {
   handleRender() {
     // Get the parent element's absolute position.
     var {left, top, right, bottom, width, height } = this.parent.getBoundingClientRect();
+    // Calculate the max size.
+    var maxHeight = document.body.clientHeight - bottom - 10;
     // This conditionally combines the css classes for the element.
     const className = ClassNames(style.root, {
       [style.hidden]: this.props.hidden
@@ -94,7 +96,7 @@ export default class Select extends React.Component {
     // Render the node and its children.
     ReactDOM.render(
       <div className={className} onClick={this.props.onClick}>
-        <div style={{position: 'fixed', left: left, top: bottom}}>
+        <div className={style.popover} style={{left: left, top: bottom, width: width, maxHeight: maxHeight}}>
           {this.props.children}
         </div>
       </div>
