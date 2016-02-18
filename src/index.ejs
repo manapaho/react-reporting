@@ -24,6 +24,24 @@
   <link href="<%=htmlWebpackPlugin.files.css[css] %>" rel="stylesheet">
   <% } %>
   <!--<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">-->
+  <style>
+
+    .axis path,
+    .axis line {
+      fill: none;
+      stroke: #000;
+      shape-rendering: crispEdges;
+    }
+
+    .bar {
+      fill: steelblue;
+    }
+
+    .x.axis path {
+      display: none;
+    }
+
+  </style>
 </head>
 <body>
 <div id="root"></div>

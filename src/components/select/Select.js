@@ -60,6 +60,7 @@ export default class Select extends React.Component {
   // If you call setState within this method,
   // render() will see the updated state and will be executed only once despite the state change.
   componentWillMount() {
+    this.updateState(this.props, this.state.value);
   }
 
   // Invoked when a component is receiving new props. This method is not called for the initial render.
@@ -67,6 +68,22 @@ export default class Select extends React.Component {
   // The old props can be accessed via this.props. Calling this.setState() within this function will not trigger an additional render.
   componentWillReceiveProps(nextProps, nextContext) {
     this.updateState(nextProps, this.state.value);
+  }
+
+  // TODO cleanup
+  componentDidUpdate() {
+    setTimeout(()=> {
+      var element = ReactDOM.findDOMNode(this.refs.focusedOption);
+      if (element && element.offsetParent) {
+        var curtop = element.offsetTop;
+        var parent = element.offsetParent;
+        while (parent && window.getComputedStyle(parent, null)['overflow-y'] != 'auto') {
+          curtop += parent.offsetTop;
+          parent = parent.offsetParent;
+        }
+        parent.scrollTop = curtop;
+      }
+    });
   }
 
   // Calculate the new state.
@@ -78,7 +95,7 @@ export default class Select extends React.Component {
       //  return false;
       //}
       // Don't show options that are already selected.
-      if (-1 !== props.selectedOptions.findIndex((selectedOption) => {
+      if (props.selectedOptions && -1 !== props.selectedOptions.findIndex((selectedOption) => {
           return option[props.optionKey] == selectedOption[props.optionKey];
         })) {
         return false;
@@ -138,6 +155,10 @@ export default class Select extends React.Component {
         break;
       // DOWN
       case 40:
+        // Open the options if necessary.
+        if (!this.state.active) {
+          this.setState({active: true});
+        }
         // Focus the next option if possible.
         if (this.state.focusedOption < this.state.filteredOptions.length - 1) {
           this.setState({focusedOption: this.state.focusedOption + 1});
@@ -148,7 +169,11 @@ export default class Select extends React.Component {
         // Select the focused option if possible.
         if (this.state.focusedOption != -1) {
           if (this.props.onSelectionChange) {
-            this.props.onSelectionChange([...this.props.selectedOptions, this.state.filteredOptions[this.state.focusedOption]]);
+            if (this.props.selectedOptions) {
+              this.props.onSelectionChange([...this.props.selectedOptions, this.state.filteredOptions[this.state.focusedOption]]);
+            } else {
+              this.props.onSelectionChange(this.state.filteredOptions[this.state.focusedOption]);
+            }
           }
         }
     }
@@ -157,7 +182,11 @@ export default class Select extends React.Component {
   // Call the parent component with the new selection.
   handleOptionClick(option, e) {
     if (this.props.onSelectionChange) {
-      this.props.onSelectionChange([...this.props.selectedOptions, option]);
+      if (this.props.selectedOptions) {
+        this.props.onSelectionChange([...this.props.selectedOptions, option]);
+      } else {
+        this.props.onSelectionChange(option);
+      }
     }
     this.refs.filter.focus();
   }
@@ -177,12 +206,14 @@ export default class Select extends React.Component {
     if (this.props.optionTemplate) {
       return (
         <li key={index} tabIndex="0" className={className}
+            ref={index == this.state.focusedOption ? 'focusedOption' : ''}
             onClick={this.handleOptionClick.bind(this, option)}>{this.props.optionTemplate(option, index)}</li>
       );
     } else {
       // Otherwise simply render the option's value.
       return (
         <li key={index} tabIndex="0" className={className}
+            ref={index == this.state.focusedOption ? 'focusedOption' : ''}
             onClick={this.handleOptionClick.bind(this, option)}>{option[this.props.optionValue]}</li>
       );
     }
@@ -204,19 +235,17 @@ export default class Select extends React.Component {
                onChange={this.handleInputChange.bind(this, 'input')}
                onKeyDown={this.handleInputKeyDown.bind(this, 'input')}
                onFocus={this.handleInputFocus.bind(this, 'input')}
-               onBlur={this.handleInputBlur.bind(this, 'input')} />
+               onBlur={this.handleInputBlur.bind(this, 'input')}/>
         {(() => {
           if (this.state.active) {
             return (
               <Popover parent={this} className={style.popover}
                        onClick={this.handlePopoverClick.bind(this)}>
-                <Card onClick={(e)=>{e.preventDefault();e.stopPropagation();}}>
-                  <ul>
-                    {this.state.filteredOptions.map((option, index) => {
-                      return this.optionTemplate(option, index);
-                    }, this)}
-                  </ul>
-                </Card>
+                <ul onClick={(e)=>{e.preventDefault();e.stopPropagation();}}>
+                  {this.state.filteredOptions.map((option, index) => {
+                    return this.optionTemplate(option, index);
+                  }, this)}
+                </ul>
               </Popover>
             );
           }

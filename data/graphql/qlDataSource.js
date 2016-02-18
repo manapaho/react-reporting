@@ -121,18 +121,57 @@ var qlDataSource = new GraphQLObjectType({
       },
       resolve(dbDataSource, {dataColumns}, {rootValue: {session}}){
 
+        if (dataColumns == null || dataColumns.length == 0) {
+          return '';
+        }
+
         tp.setConnectionConfig({
           userName: 'reporting',
           password: 'reporting',
           server: 'SVBW01NZVM'
         });
 
+        var groups = [];
+        var aggregations = [];
+        dataColumns.forEach((dataColumn)=> {
+          if (dataColumn.aggregation) {
+            aggregations.push(dataColumn);
+          } else {
+            groups.push(dataColumn);
+          }
+        });
+
+        var query = 'SELECT TOP(1000) ' +
+          [
+            ...groups.map((dataColumn)=> {
+              return dataColumn.key
+            }),
+            ...aggregations.map((dataColumn)=> {
+              return dataColumn.aggregation + '(' + dataColumn.key + ') AS ' + dataColumn.key
+            })
+          ].join(',') +
+          ' FROM [Datamart_Spend].[tableau].[VW_GET_SPEND_PERFORMANCE] ' +
+          ' WHERE language_id = \'mp_eng_01\' and reporting_hierarchy_id = 5 ';
+
+        if (groups.length > 0) {
+          query += ' GROUP BY ' +
+            groups.map((dataColumn)=> {
+              return dataColumn.key
+            }).join(',');
+          query += ' ORDER BY ' +
+            groups.map((dataColumn)=> {
+              return dataColumn.key
+            }).join(',');
+        }
+
+        console.log(query);
+
         return tp
-          .sql("select top(1) * from [Datamart_Spend].[tableau].[VW_GET_SPEND_PERFORMANCE]")
+          .sql(query)
           .execute()
           .then((results)=> {
-            console.log(results);
-            return JSON.stringify(results);
+            //console.log(results);
+            return JSON.stringify({data: results});
           })
           .fail((err)=> {
             console.log(err);
