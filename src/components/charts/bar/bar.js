@@ -81,18 +81,18 @@ export default class extends React.Component {
       var y = 0;
       var yMax = 0;
       data.forEach((row, index) => {
-        if (index > 0 && row.merchant_category_group_description != data[index - 1].merchant_category_group_description) {
+        if (index > 0 && row[groupsKey] != data[index - 1][groupsKey]) {
           yMax = Math.max(yMax, y);
           x++;
           y = 0;
         }
         chartData.push({
-          x: row.merchant_category_group_description,
+          x: row[groupsKey],
           y: y,
-          h: row.usd_amount,
-          c: dataSeriesKeys.indexOf(row.merchant_category_description)
+          h: row[valueKey],
+          c: dataSeriesKeys.indexOf(row[seriesKey])
         });
-        y += row.usd_amount;
+        y += row[valueKey];
       });
       yMax = Math.max(yMax, y);
 

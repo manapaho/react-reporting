@@ -10,7 +10,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Relay from 'react-relay';
-import BarChart from '../../../components/charts/bar/bar';
+import ClassNames from 'classnames';
 
 /**
  * Import Mutations.
@@ -23,6 +23,9 @@ import BarChart from '../../../components/charts/bar/bar';
 /**
  * Import UX components.
  */
+import BarChart from '../../../components/charts/bar/bar';
+import PieChart from '../../../components/charts/pie/pie';
+
 import {Button, IconButton} from 'react-toolbox/lib/button';
 import {Card, CardTitle, CardText} from 'react-toolbox/lib/card';
 import Select from '../../../components/select/select';
@@ -39,7 +42,7 @@ import style from './style';
 import {IntlProvider, FormattedMessage} from 'react-intl';
 
 var chartTypes = [{
-  name: 'Pie Chart',
+  name: 'Pie',
   chartColumns: [{
     name: 'Slice Names',
     type: 'group',
@@ -50,7 +53,7 @@ var chartTypes = [{
     dataColumns: []
   }]
 }, {
-  name: 'Bar Chart',
+  name: 'Bar',
   chartColumns: [{
     name: 'Groups',
     type: 'group',
@@ -81,15 +84,7 @@ class Chart extends React.Component {
       chartType: null,
       dataSource: null,
       data: [],
-      // todo remove following
-      dimensionsAndMeasures: [
-        {id: 0, type: 'measure', name: 'Spent'},
-        {id: 1, type: 'dimension', name: 'Sport'},
-        {id: 2, type: 'measure', name: 'Volume'},
-        {id: 3, type: 'dimension', name: 'Trade Area'},
-        {id: 4, type: 'measure', name: 'Tax'}],
-      selectedColumns: [],
-      selectedRows: []
+      loading: false
     }
   }
 
@@ -114,48 +109,37 @@ class Chart extends React.Component {
     }
   }
 
+  // Change the chart type.
   handleChartTypeSelectionChanged = (selectedOption) => {
     this.setState({chartType: selectedOption});
   };
 
+  // Change the data source.
   handleDataSourceSelectionChanged = (selectedOption) => {
     this.setState({dataSource: selectedOption});
   };
 
+  // Change the chart column's data columns.
   handleChartColumnSelectionChanged = (chartColumn, selectedOptions) => {
     chartColumn.dataColumns = selectedOptions;
-    var queryDataColumns = [];
-    this.state.chartType.chartColumns.forEach((cc)=> {
-      cc.dataColumns.forEach((dc)=> {
-        queryDataColumns.push({
-          name: dc.name,
-          key: dc.key,
-          type: dc.type,
-          aggregation: dc.aggregation
-        });
-      })
-    });
-    this.props.relay.setVariables({dataColumns: queryDataColumns}, readyState => {
-      if (readyState.done || readyState.aborted) {
-        this.setState({loading: false});
-      } else if (readyState.error) {
-        this.setState({loading: false, error});
-      }
-    });
+    this.loadChart();
   };
 
+  // How to display chart type options.
   chartTypeOptionTemplate = (option, index) => {
     return (
       <div key={option.name}>{option.name}</div>
     );
   };
 
+  // How to display data source options.
   dataSourceOptionTemplate = (option, index) => {
     return (
       <div key={option.id}>{option.name}</div>
     );
   };
 
+  // How to display data column options.
   dimensionsAndMeasuresOptionTemplate = (option, index) => {
     return (
       <div key={option.id}>
@@ -172,11 +156,38 @@ class Chart extends React.Component {
     );
   };
 
+  // Remove a data column from a chart column.
   handleDataColumnDeleteClick(chartColumn, dataColumn) {
     chartColumn.dataColumns.splice(chartColumn.dataColumns.indexOf(dataColumn), 1);
     this.forceUpdate();
+    this.loadChart();
   };
 
+  // Load new chart data.
+  loadChart() {
+    var queryDataColumns = [];
+    this.state.chartType.chartColumns.forEach((cc)=> {
+      cc.dataColumns.forEach((dc)=> {
+        queryDataColumns.push({
+          name: dc.name,
+          key: dc.key,
+          type: dc.type,
+          aggregation: dc.aggregation
+        });
+      })
+    });
+    this.props.relay.setVariables({dataColumns: queryDataColumns}, readyState => {
+      if (readyState.done || readyState.aborted) {
+        this.setState({loading: false});
+      } else if (readyState.error) {
+        this.setState({loading: false, error: readyState.error});
+      } else if (readyState.done == false && readyState.ready == false) {
+        this.setState({loading: true, error: readyState.error});
+      }
+    });
+  };
+
+  // How to render chart columns.
   renderChartColumns() {
     if (!this.state.chartType || !this.state.chartType.chartColumns) {
       return;
@@ -194,7 +205,7 @@ class Chart extends React.Component {
                   onSelectionChange={this.handleChartColumnSelectionChanged.bind(this, chartColumn)}/>
           <div className={style.selectedColumns}>{chartColumn.dataColumns.map((dataColumn)=> {
             return (
-              <div key={dataColumn.id}>
+              <div key={dataColumn.key}>
                 <IconButton icon='close' accent
                             onClick={this.handleDataColumnDeleteClick.bind(this, chartColumn, dataColumn)}/>
                 <span className={style.selectedColumn}>{dataColumn.name}</span>
@@ -207,10 +218,59 @@ class Chart extends React.Component {
     });
   };
 
+  renderBarChart(){
+    return (
+      <BarChart data={this.state.data.data}
+                groupsKey={(() => {
+                      if(this.state.chartType && this.state.chartType.chartColumns.length > 0 && this.state.chartType.chartColumns[0].dataColumns.length > 0)
+                        return this.state.chartType.chartColumns[0].dataColumns[0].key;
+                        })()}
+                seriesKey={(() => {
+                      if(this.state.chartType && this.state.chartType.chartColumns.length > 0 && this.state.chartType.chartColumns[0].dataColumns.length > 1)
+                        return this.state.chartType.chartColumns[0].dataColumns[1].key;
+                        })()}
+                valueKey={(() => {
+                      if(this.state.chartType && this.state.chartType.chartColumns.length > 1 && this.state.chartType.chartColumns[1].dataColumns.length > 0)
+                        return this.state.chartType.chartColumns[1].dataColumns[0].key;
+                        })()}
+      />
+    );
+  }
+
+  renderPieChart(){
+    return (
+      <PieChart data={this.state.data.data}
+                namesKey={(() => {
+                      if(this.state.chartType && this.state.chartType.chartColumns.length > 0 && this.state.chartType.chartColumns[0].dataColumns.length > 0)
+                        return this.state.chartType.chartColumns[0].dataColumns[0].key;
+                        })()}
+                valueKey={(() => {
+                      if(this.state.chartType && this.state.chartType.chartColumns.length > 1 && this.state.chartType.chartColumns[1].dataColumns.length > 0)
+                        return this.state.chartType.chartColumns[1].dataColumns[0].key;
+                        })()}
+      />
+    );
+  }
+
+  renderChart(){
+    if(this.state.chartType) {
+      switch (this.state.chartType.name) {
+        case 'Pie':
+          return this.renderPieChart();
+        case 'Bar':
+          return this.renderBarChart();
+      }
+    }
+  }
+
   // Render the component.
   render() {
     // Get the properties.
     const {viewer, children} = this.props;
+    // Loading style
+    const loadingClassName = ClassNames(style.loading, {
+      [style.active]: this.state.loading
+    });
     // Get the components css classes.
     let className = style.root;
     // Return the component UI.
@@ -244,20 +304,8 @@ class Chart extends React.Component {
           })()}
         </Card>
         <Card className={style.chartCard}>
-          <BarChart data={this.state.data.data}
-                    groupsKey={(() => {
-                      if(this.state.chartType && this.state.chartType.chartColumns.length > 0 && this.state.chartType.chartColumns[0].dataColumns.length > 0)
-                        return this.state.chartType.chartColumns[0].dataColumns[0].key;
-                        })()}
-                    seriesKey={(() => {
-                      if(this.state.chartType && this.state.chartType.chartColumns.length > 0 && this.state.chartType.chartColumns[0].dataColumns.length > 1)
-                        return this.state.chartType.chartColumns[0].dataColumns[1].key;
-                        })()}
-                    valueKey={(() => {
-                      if(this.state.chartType && this.state.chartType.chartColumns.length > 1 && this.state.chartType.chartColumns[1].dataColumns.length > 0)
-                        return this.state.chartType.chartColumns[1].dataColumns[0].key;
-                        })()}
-          />
+          <div className={loadingClassName}></div>
+          {this.renderChart()}
         </Card>
       </div>
     );

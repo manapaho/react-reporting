@@ -1,0 +1,10 @@
+:global(polyline) {
+  opacity: .3;
+  stroke: black;
+  stroke-width: 2px;
+  fill: none;
+}
+
+:global(path.slice) {
+  stroke-width:2px;
+}
